@@ -144,7 +144,7 @@ static void solve_spec(FILE *out, int *d, int ndims) {
 
     if (ndims == 1) {
         int n = d[0];
-        Frac M[MAXN][MAXN] = {{0, 1}};
+        Frac M[MAXN][MAXN] = {0};
         read_mat(M, n, n);
         Frac det = det_gauss(M, n);
         char b[64];
@@ -155,7 +155,7 @@ static void solve_spec(FILE *out, int *d, int ndims) {
     }
     if (ndims == 2) {
         int r = d[0], k = d[1];
-        Frac A[MAXN][MAXN] = {{0, 1}}, B[MAXN][MAXN] = {{0, 1}}, C[MAXN][MAXN] = {{0, 1}};
+        Frac A[MAXN][MAXN] = {0}, B[MAXN][MAXN] = {0}, C[MAXN][MAXN] = {0};
         fprintf(out, "-- 计算 [%d×%d] * [%d×%d] --\n", r, k, k, r);
         read_mat(A, r, k);
         read_mat(B, k, r);
@@ -177,11 +177,11 @@ static void solve_spec(FILE *out, int *d, int ndims) {
         fprintf(out, "[%d×%d]%s", d[i], d[i + 1], (i < m - 1 ? " * " : ""));
     fprintf(out, " --\n");
 
-    Frac C[MAXN][MAXN] = {{0, 1}};
+    Frac C[MAXN][MAXN] = {0};
     int rows = d[0], cols = d[1];
     read_mat(C, rows, cols);
     for (int i = 1; i < m; i++) {
-        Frac M[MAXN][MAXN] = {{0, 1}}, T[MAXN][MAXN] = {{0, 1}};
+        Frac M[MAXN][MAXN] = {0}, T[MAXN][MAXN] = {0};
         read_mat(M, d[i], d[i + 1]);
         mat_mul(C, rows, d[i], M, d[i + 1], T);
         for (int a = 0; a < rows; a++)
