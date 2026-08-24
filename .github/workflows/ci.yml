@@ -1,0 +1,9 @@
+name: CI
+on: { push: { branches: [main] }, pull_request: { branches: [main] }, workflow_dispatch: {} }
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 构建 + 测试
+        run: make -j"$(nproc)" test

@@ -1,0 +1,38 @@
+name: Release
+on:
+  push: { tags: ['v*'] }
+  workflow_dispatch: {}
+permissions: { contents: write }
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 打包 Linux
+        run: bash scripts/package_linux.sh "$GITHUB_WORKSPACE" "$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with: { name: linux-tar, path: dist/*.tar.gz }
+  windows:
+    runs-on: windows-latest
+    defaults: { run: { shell: msys2 {0} } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with: { msystem: MINGW64, update: true, install: 'mingw-w64-x86_64-gcc zip' }
+      - name: 打包 Windows
+        run: bash scripts/package_windows.sh "$(cygpath -u "$GITHUB_WORKSPACE")" "$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with: { name: windows-zip, path: dist/*.zip }
+  release:
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts }
+      - name: 上传到 Release（等 release-please 建好）
+        env: { GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}', TAG: '${{ github.ref_name }}' }
+        run: |
+          for i in $(seq 1 40); do gh release view "$TAG" >/dev/null 2>&1 && break; sleep 3; done
+          find artifacts -type f \( -name '*.zip' -o -name '*.tar.gz' \) -print0 | xargs -0 -I{} gh release upload "$TAG" "{}" --clobber
+          echo "已上传到 $(gh release view "$TAG" --json name --jq .name)"
