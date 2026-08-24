@@ -107,6 +107,13 @@ static void fstr(Frac f, char *out, size_t sz) {
     else snprintf(out, sz, "%lld/%lld", f.num, f.den);
 }
 
+/* 正负号分析：正 / 负 / 零(矩阵不可逆) */
+static const char *sign_label(Frac f) {
+    if (f.num == 0) return "零（矩阵不可逆）";
+    if (f.num > 0) return "正";
+    return "负";
+}
+
 static void print_mat(FILE *out, Frac M[MAXN][MAXN], int rows, int cols) {
     char b[64];
     for (int i = 0; i < rows; i++) {
@@ -150,7 +157,7 @@ static void solve_spec(FILE *out, int *d, int ndims) {
         char b[64];
         fprintf(out, "矩阵：\n"); print_mat(out, M, n, n);
         fstr(det, b, sizeof(b));
-        fprintf(out, "det = %s\n", b);
+        fprintf(out, "det = %s  [%s]\n", b, sign_label(det));
         return;
     }
     if (ndims == 2) {
@@ -164,7 +171,7 @@ static void solve_spec(FILE *out, int *d, int ndims) {
         char b[64];
         fprintf(out, "乘积矩阵 C = [%d×%d]：\n", r, r); print_mat(out, C, r, r);
         fstr(det, b, sizeof(b));
-        fprintf(out, "det = %s\n", b);
+        fprintf(out, "det = %s  [%s]\n", b, sign_label(det));
         return;
     }
     int m = ndims - 1;
@@ -192,7 +199,7 @@ static void solve_spec(FILE *out, int *d, int ndims) {
     char b[64];
     fprintf(out, "乘积矩阵 C = [%d×%d]：\n", rows, cols); print_mat(out, C, rows, cols);
     fstr(det, b, sizeof(b));
-    fprintf(out, "det = %s\n", b);
+    fprintf(out, "det = %s  [%s]\n", b, sign_label(det));
 }
 
 static int parse_int_line(const char *line, int *arr, int max) {
