@@ -83,8 +83,8 @@ static void solve_spec(FILE *out, int *d, int ndims) {
         int n = d[0];
         double M[MAXN][MAXN] = {0};
         read_mat(M, n, n);
-        double det = det_gauss(M, n);
         fprintf(out, "矩阵：\n"); print_mat(out, M, n, n);
+        double det = det_gauss(M, n);
         fprintf(out, "det = "); print_value(out, det); fprintf(out, "\n");
         return;
     }
@@ -97,8 +97,8 @@ static void solve_spec(FILE *out, int *d, int ndims) {
         read_mat(A, r, k);
         read_mat(B, k, r);
         mat_mul(A, r, k, B, r, C);   /* C = [r×k] * [k×r] = [r×r] */
-        double det = det_gauss(C, r);
         fprintf(out, "乘积矩阵 C = [%d×%d]：\n", r, r); print_mat(out, C, r, r);
+        double det = det_gauss(C, r);
         fprintf(out, "det = "); print_value(out, det); fprintf(out, "\n");
         return;
     }
@@ -126,8 +126,8 @@ static void solve_spec(FILE *out, int *d, int ndims) {
             for (int b = 0; b < d[i + 1]; b++) C[a][b] = T[a][b];
         cols = d[i + 1];
     }
-    double det = det_gauss(C, rows);
     fprintf(out, "乘积矩阵 C = [%d×%d]：\n", rows, cols); print_mat(out, C, rows, cols);
+    double det = det_gauss(C, rows);
     fprintf(out, "det = "); print_value(out, det); fprintf(out, "\n");
 }
 
