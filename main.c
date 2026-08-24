@@ -46,7 +46,28 @@ static int frac_abs_gt(Frac a, Frac b) {
 }
 
 /* 解析一个 token 为分数：支持 a/b、整数、小数(1.5)。失败返回 0，成功返回 1 */
+static int parse_frac(const char *s, Frac *out);
+
+/* 10^exp（cap 防溢出） */
+static long long ipow10(int e){ long long r=1; while(e-->0) r*=10; return r; }
+
 static int parse_frac(const char *s, Frac *out) {
+    /* 科学计数 aEb / aeb */
+    const char *epos = strchr(s, 'e');
+    if (!epos) epos = strchr(s, 'E');
+    if (epos && epos != s) {
+        char mant[96]; size_t lm=(size_t)(epos-s);
+        if (lm>=sizeof(mant)-1) return 0;
+        memcpy(mant, s, lm); mant[lm]='\0';
+        Frac m;
+        if (!parse_frac(mant, &m)) return 0;
+        long exp = strtol(epos+1, NULL, 10);
+        if (exp > 18 || exp < -18) return 0;   /* 数值过大，拒绝 */
+        if (exp >= 0) m.num *= ipow10((int)exp);
+        else          m.den *= ipow10((int)-exp);
+        *out = frac_norm(m.num, m.den);
+        return 1;
+    }
     const char *slash = strchr(s, '/');
     if (slash) {
         char a[64], b[64];
@@ -81,9 +102,20 @@ static int parse_frac(const char *s, Frac *out) {
     return 1;
 }
 
+/* 读一个元素 token：跳过空格、[]、,、;，读到分隔符为止 */
+static int read_tok(char *buf, size_t sz) {
+    int c, n = 0;
+    while ((c = getchar()) != EOF && (isspace(c) || c=='['||c==']'||c==','||c==';')) ;
+    if (c == EOF) return 0;
+    buf[n++] = (char)c;
+    while ((c = getchar()) != EOF && !isspace(c) && c!='['&&c!=']'&&c!=','&&c!=';' && n < (int)sz-1)
+        buf[n++] = (char)c;
+    buf[n] = '\0';
+    return 1;
+}
 static int read_elem(Frac *f) {
     char tok[128];
-    if (scanf("%127s", tok) != 1) return 0;
+    if (!read_tok(tok, sizeof(tok))) return 0;
     return parse_frac(tok, f);
 }
 static void read_mat(Frac A[MAXN][MAXN], int rows, int cols) {
@@ -229,6 +261,9 @@ int main(int argc, char **argv) {
             fprintf(stderr, "未知参数: %s\n", argv[i]);
         }
     }
+    const char *infile = NULL;
+    for (int i = 1; i < argc; i++) if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) { infile = argv[i + 1]; }
+    if (infile) { if (!freopen(infile, "r", stdin)) { perror("打开输入文件失败"); return 1; } }
     if (ndims > 0) {
         FILE *out = outfile ? fopen(outfile, "w") : stdout;
         if (!out) { perror("打开输出文件失败"); return 1; }
