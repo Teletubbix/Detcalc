@@ -33,6 +33,6 @@ jobs:
       - name: 上传到 Release（等 release-please 建好）
         env: { GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}', TAG: '${{ github.ref_name }}' }
         run: |
-          for i in $(seq 1 40); do gh release view "$TAG" >/dev/null 2>&1 && break; sleep 3; done
-          find artifacts -type f \( -name '*.zip' -o -name '*.tar.gz' \) -print0 | xargs -0 -I{} gh release upload "$TAG" "{}" --clobber
-          echo "已上传到 $(gh release view "$TAG" --json name --jq .name)"
+          for i in $(seq 1 40); do gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 && break; sleep 3; done
+          find artifacts -type f \( -name '*.zip' -o -name '*.tar.gz' \) -print0 | xargs -0 -I{} gh release upload "$TAG" "{}" --repo "$GITHUB_REPOSITORY" --clobber
+          echo "已上传到 $(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json name --jq .name)"
