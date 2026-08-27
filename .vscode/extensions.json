@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "ms-vscode.makefile-tools",
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.cpp-devtools",
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+    "formulahendry.code-runner",
+    "kisstkondoros.vscode-gutter-preview",
+    "github.github-vscode-theme",
+    "vscode-icons-team.vscode-icons",
+    "ms-ceintl.vscode-language-pack-zh-hans"
+  ]
+}
