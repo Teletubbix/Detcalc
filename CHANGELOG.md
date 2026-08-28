@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Teletubbix/Detcalc/compare/v0.2.0...v0.2.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* release 上传加 --repo(避免 无 git 仓库导致 gh 无法探测) ([d30a8ab](https://github.com/Teletubbix/Detcalc/commit/d30a8ab7b18e51324cc9eaa3226171252c636979))
+
 ## [0.2.0](https://github.com/Teletubbix/Detcalc/compare/v0.1.0...v0.2.0) (2026-08-24)
 
 
